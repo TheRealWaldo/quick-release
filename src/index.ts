@@ -1,15 +1,21 @@
-import { info, debug, setFailed, warning, getInput } from '@actions/core';
+import { info, debug, setFailed, warning, getInput, exportVariable } from '@actions/core';
 import conventionalChangelog from 'conventional-changelog';
 import { Context } from 'conventional-changelog-core';
 import { Context as WriterContext } from 'conventional-changelog-writer';
 import concat from 'concat-stream';
-// import conventionalRecommendedBump from 'conventional-recommended-bump';
+import conventionalRecommendedBump from 'conventional-recommended-bump';
 
-// function getConventionalRecommendedBump() {
-//   conventionalRecommendedBump({}, (error, result) => {
-//     if (error) return reject(error);
-//   });
-// }
+function getConventionalRecommendedBump(
+  preset: string,
+  tagPrefix: string
+): Promise<string | undefined> {
+  return new Promise((resolve, reject) => {
+    conventionalRecommendedBump({ preset, tagPrefix }, (error, result) => {
+      if (error) return reject(error);
+      resolve(result.releaseType);
+    });
+  });
+}
 
 function generateChangelog<TContext extends WriterContext = Context>(
   preset: string,
@@ -39,17 +45,27 @@ try {
   const preset = getInput('preset');
   // const gitUserName = getInput('git-user-name', { required: true });
   // const gitUserEmail = getInput('git-user-email') || process.env.GITHUB_EMAIL;
-  const context: Partial<WriterContext> = {};
-  // TODO: Get changelog
+  const context: Partial<Context> = {};
+
   generateChangelog(tagPrefix, preset, context)
     .then((changeLog) => {
+      info('Changelog:');
       info(changeLog);
+      info(`Version: ${context.version}`);
+
+      exportVariable('DEBUG', 'conventional-recommended-bump');
+
+      getConventionalRecommendedBump(preset, tagPrefix)
+        .then((releaseType) => {
+          info(`Recommended bump: ${releaseType}`);
+        })
+        .catch((reason) => {
+          throw `getConventionalRecommendedBump: ${reason}`;
+        });
     })
     .catch((reason) => {
       throw `generateChangelog: ${reason}`;
     });
-  // TODO: Get recommended bump
-  //conventionalRecommendedBump();
 } catch (error) {
   setFailed(error.message);
 }
