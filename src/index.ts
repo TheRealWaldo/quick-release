@@ -48,26 +48,30 @@ try {
   // const gitUserEmail = getInput('git-user-email') || process.env.GITHUB_EMAIL;
   const context: Partial<Context> = {};
 
+  exportVariable('DEBUG', 'conventional-recommended-bump');
+
+  getConventionalRecommendedBump(preset, tagPrefix)
+    .then((releaseType) => {
+      info(`Recommended bump: ${releaseType}`);
+    })
+    .catch((reason) => {
+      throw `getConventionalRecommendedBump: ${reason}`;
+    });
+
   generateChangelog(tagPrefix, preset, context)
     .then((changeLog) => {
       info('Changelog:');
       info(changeLog);
       info(`Version: ${context.version}`);
       debug(util.inspect(context, { depth: null }));
-
-      exportVariable('DEBUG', 'conventional-recommended-bump');
-
-      getConventionalRecommendedBump(preset, tagPrefix)
-        .then((releaseType) => {
-          info(`Recommended bump: ${releaseType}`);
-        })
-        .catch((reason) => {
-          throw `getConventionalRecommendedBump: ${reason}`;
-        });
     })
     .catch((reason) => {
       throw `generateChangelog: ${reason}`;
     });
 } catch (error) {
-  setFailed(error.message);
+  if (error instanceof Error) {
+    setFailed(error.message);
+  } else {
+    setFailed('Unknown reason');
+  }
 }
