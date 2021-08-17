@@ -1,0 +1,50 @@
+{
+  "name": "gh-action-quick-release",
+  "version": "0.0.1",
+  "description": "Github Action to perform simple, and quick releases.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint --cache src/*.ts src/**/*.ts",
+    "lint-fix": "npx eslint --fix --cache src/**/*.ts src/*.ts",
+    "build": "rm -Rf dist/* && npx ncc build src/*.ts -m",
+    "lint-build": "npm run lint-staged && npm run build",
+    "lint-fix-build": "npm run lint-fix && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheRealWaldo/quick-release.git"
+  },
+  "author": "TheRealWaldo",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/TheRealWaldo/quick-release/issues"
+  },
+  "homepage": "https://github.com/TheRealWaldo/quick-release#readme",
+  "dependencies": {
+    "@actions/core": "^1.4.0",
+    "@actions/exec": "^1.1.0",
+    "@actions/github": "^5.0.0",
+    "@types/concat-stream": "^1.6.1",
+    "actions-toolkit": "^6.0.1",
+    "concat-stream": "^2.0.0",
+    "conventional-changelog": "^3.1.24",
+    "conventional-recommended-bump": "^6.1.0",
+    "json5": "^2.2.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@tsconfig/node14": "^1.0.1",
+    "@types/conventional-changelog": "^3.1.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "@vercel/ncc": "^0.29.1",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.3.2",
+    "typescript": "^4.3.5"
+  }
+}
