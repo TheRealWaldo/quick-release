@@ -4,6 +4,7 @@ import { Context } from 'conventional-changelog-core';
 import { Context as WriterContext } from 'conventional-changelog-writer';
 import concat from 'concat-stream';
 import conventionalRecommendedBump from 'conventional-recommended-bump';
+import util from 'util';
 
 function getConventionalRecommendedBump(
   preset: string,
@@ -52,6 +53,7 @@ try {
       info('Changelog:');
       info(changeLog);
       info(`Version: ${context.version}`);
+      debug(util.inspect(context, { depth: null }));
 
       exportVariable('DEBUG', 'conventional-recommended-bump');
 
