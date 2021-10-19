@@ -1,72 +1,149 @@
-import { info, debug, setFailed, warning, getInput, exportVariable } from '@actions/core';
-import conventionalChangelog from 'conventional-changelog';
-import { Context } from 'conventional-changelog-core';
-import { Context as WriterContext } from 'conventional-changelog-writer';
-import concat from 'concat-stream';
-import conventionalRecommendedBump from 'conventional-recommended-bump';
-import util from 'util';
+import { info, error, debug, setFailed, warning, getInput, setOutput } from '@actions/core';
+import dateFormat from 'dateformat';
+import { loadConventionConfiguration } from './lib/convention-configuration';
+import {
+  createBranch,
+  detectConvention,
+  getCommitMessages,
+  getLatestVersionFromTags,
+  remoteBranchExists,
+  setUpGit,
+} from './lib/git-operations';
+import { getRecommendedVersion } from './lib/get-recommended-version';
+import { generateChangelog } from './lib/generate-changelog';
+import { bumpFiles } from './lib/bump-files';
+import simpleGit from 'simple-git';
+import { default as debugLogger } from 'debug';
+import { addAssignees, createOrUpdatePullRequest } from './lib/github-operations';
 
-function getConventionalRecommendedBump(
-  preset: string,
-  tagPrefix: string
-): Promise<string | undefined> {
-  return new Promise((resolve, reject) => {
-    conventionalRecommendedBump({ preset, tagPrefix }, (error, result) => {
-      if (error) return reject(error);
-      resolve(result.releaseType);
-    });
-  });
-}
-
-function generateChangelog<TContext extends WriterContext = Context>(
-  preset: string,
-  tagPrefix: string,
-  context: Partial<TContext>
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    conventionalChangelog(
-      {
-        preset,
-        warn: warning,
-        debug: debug,
-        tagPrefix,
-      },
-      context
-    )
-      .pipe(concat((result) => resolve(result.toString())))
-      .on('error', (error) => reject(error));
-  });
-}
+process.on('unhandledRejection', (rejectionError) => {
+  if (rejectionError instanceof Error) {
+    error(rejectionError.message);
+  }
+  setFailed('Unhandled rejection, please inform the developer!');
+});
 
 try {
-  // const githubToken = getInput('github-token', { required: true });
-  // const githubUsername = getInput('github-username', { required: true });
-  // const remoteRepo = `https://${githubUsername}:${githubToken}@github.com/${process.env.GITHUB_REPOSITORY}.git`;
+  debugLogger.enable('simple-git,simple-git:*');
   const tagPrefix = getInput('tag-prefix');
-  const preset = getInput('preset');
-  // const gitUserName = getInput('git-user-name', { required: true });
-  // const gitUserEmail = getInput('git-user-email') || process.env.GITHUB_EMAIL;
-  const context: Partial<Context> = {};
+  debug(`Using tag prefix: ${tagPrefix}`);
+  const githubToken = getInput('github-token', { required: true });
+  const githubUsername = getInput('github-username', { required: true });
+  const gitUserName = getInput('git-user-name', { required: true });
+  const gitUserEmail = getInput('git-user-email') || process.env.GITHUB_EMAIL;
+  if (!gitUserEmail || !gitUserEmail.length) {
+    throw Error('Could not determine git-user-email');
+  }
+  const ownerGithubUsername = getInput('owner-github-username');
+  const replaceFiles = getInput('replace-files')
+    .split(',')
+    .map((filePath) => filePath.trim())
+    .filter((filePath) => filePath !== '');
+  const remoteActionRepo = `https://${encodeURIComponent(githubUsername)}:${encodeURIComponent(
+    githubToken
+  )}@github.com/${process.env.GITHUB_REPOSITORY}.git`;
+  const remoteRepo = `https://github.com/${process.env.GITHUB_REPOSITORY}.git`;
+  const base = getInput('base', { required: true });
+  const [owner, repo] = (process.env.GITHUB_REPOSITORY || '').split('/');
+  const assignees = getInput('assignees')
+    .split(',')
+    .map((assignee) => assignee.trim())
+    .filter((assignee) => assignee !== '');
+  if (!owner || !repo) {
+    setFailed('GITHUB_REPOSITORY environment variable not present or incorrect.');
+    process.exit(1);
+  }
+  debug(`owner: ${owner}`);
+  debug(`repo: ${repo}`);
 
-  exportVariable('DEBUG', 'conventional-recommended-bump');
+  // TODO: Replace?
+  setUpGit(gitUserName, gitUserEmail, remoteActionRepo);
 
-  getConventionalRecommendedBump(preset, tagPrefix)
-    .then((releaseType) => {
-      info(`Recommended bump: ${releaseType}`);
+  const latestVersion = getLatestVersionFromTags(tagPrefix);
+  const convention = getInput('preset') || detectConvention();
+  const commitMessages = getCommitMessages(latestVersion, 'HEAD');
+
+  loadConventionConfiguration(convention)
+    .then((config) => {
+      const recommendedVersion = getRecommendedVersion(
+        latestVersion,
+        tagPrefix,
+        commitMessages,
+        config
+      );
+
+      if (recommendedVersion === latestVersion) {
+        info('Nothing qualified to release.');
+        // TODO: Create a feature to back-check/validate and update all past releases (addresses bug from release-it)
+      } else {
+        // TODO: Check if the last commit is a chore(release) bump (i.e. release PR has been merged)
+        // TODO: Allow chore(release) commit to be configurable
+
+        // TODO: Tag the release/do the github release
+        const git = simpleGit();
+        // TODO: Allow chore(release) commit to be configurable?
+        const title = `chore(release): ${recommendedVersion}`;
+
+        if (remoteBranchExists(remoteRepo, 'release')) {
+          warning('Release branch already exists on the remote.');
+          setFailed('Updating of existing releases not yet supported.');
+          process.exit(1);
+          // TODO: Rebase the existing release branch onto this head (probably master/main) and check it out
+        } else {
+          createBranch('release');
+        }
+
+        return Promise.all([
+          bumpFiles(latestVersion, recommendedVersion, replaceFiles),
+          generateChangelog(
+            commitMessages,
+            {
+              version: recommendedVersion,
+              repoUrl: remoteRepo,
+              host: 'https://github.com',
+              owner: ownerGithubUsername,
+              issue: 'issues',
+              commit: 'commit',
+              date: dateFormat(new Date(), 'yyyy-mm-dd', true),
+            },
+            config
+          ),
+        ]).then(([replacementResults, changeLog]) => {
+          // TODO: If there was nothing bumped, there is nothing to commit: if the branch already existed this might be okay, if not, we might have an error as there'll be nothing to commit, push, and possibly an empty pull-request.  Handle this situation.
+          // TODO: Add a feature to run post bump file commands specified in action config (i.e. build/compile)
+          debug(`Replacement results: ${JSON.stringify(replacementResults)}`);
+
+          info('Changelog:');
+          info(changeLog);
+
+          debug('committing...');
+
+          return git
+            .add(replaceFiles)
+            .commit([title, changeLog])
+            .push('origin', 'release')
+            .then(() => {
+              const pullRequestPromise = createOrUpdatePullRequest(
+                owner,
+                repo,
+                'release',
+                base,
+                title,
+                changeLog
+              );
+              pullRequestPromise.then((number) => setOutput('pull-request', number));
+              if (assignees && assignees.length) {
+                pullRequestPromise.then((issue_number) =>
+                  addAssignees(owner, repo, issue_number, assignees)
+                );
+              }
+              return pullRequestPromise;
+            });
+        });
+      }
     })
     .catch((reason) => {
-      throw `getConventionalRecommendedBump: ${reason}`;
-    });
-
-  generateChangelog(tagPrefix, preset, context)
-    .then((changeLog) => {
-      info('Changelog:');
-      info(changeLog);
-      info(`Version: ${context.version}`);
-      debug(util.inspect(context, { depth: null }));
-    })
-    .catch((reason) => {
-      throw `generateChangelog: ${reason}`;
+      setFailed(reason);
     });
 } catch (error) {
   if (error instanceof Error) {
