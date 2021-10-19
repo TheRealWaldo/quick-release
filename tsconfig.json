@@ -2,7 +2,7 @@
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
     "moduleResolution": "node",
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "typeRoots": ["src/types", "node_modules/@types"]
   },
-  "exclude": ["node_modules", "src/types"]
+  "exclude": ["node_modules"]
 }
