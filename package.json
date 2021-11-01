@@ -33,7 +33,7 @@
     "json5": "^2.2.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.2.1",
+    "@commitlint/cli": "^14.1.0",
     "@commitlint/config-conventional": "^14.1.0",
     "@tsconfig/node14": "^1.0.1",
     "@types/conventional-changelog": "^3.1.1",
