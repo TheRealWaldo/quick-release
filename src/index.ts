@@ -86,13 +86,10 @@ try {
         const title = `chore(release): ${recommendedVersion}`;
 
         if (remoteBranchExists(remoteRepo, 'release')) {
-          warning('Release branch already exists on the remote.');
-          setFailed('Updating of existing releases not yet supported.');
-          process.exit(1);
-          // TODO: Rebase the existing release branch onto this head (probably master/main) and check it out
-        } else {
-          createBranch('release');
+          warning('Release branch already exists on the remote.  Changes will be destroyed.');
         }
+
+        createBranch('release');
 
         return Promise.all([
           bumpFiles(latestVersion, recommendedVersion, replaceFiles),
@@ -122,7 +119,7 @@ try {
           return git
             .add(replaceFiles)
             .commit([title, changeLog])
-            .push('origin', 'release')
+            .push('origin', 'release', { '--force': null })
             .then(() => {
               const pullRequestPromise = githubOp.createOrUpdatePullRequest(
                 owner,
