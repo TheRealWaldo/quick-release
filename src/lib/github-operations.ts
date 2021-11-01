@@ -58,6 +58,17 @@ export class githubOperations {
     }
   }
 
+  public async release(owner: string, repo: string, tag_name: string, name: string, body: string) {
+    const result = await this.octokit.repos.createRelease({
+      owner,
+      repo,
+      name,
+      body,
+      tag_name,
+    });
+    return result;
+  }
+
   public async addAssignees(
     owner: string,
     repo: string,

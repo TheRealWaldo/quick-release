@@ -1,4 +1,4 @@
-* {{#if shortDesc}}{{shortDesc}}{{else}}{{header}}{{/if}}
+{{#if type}}**{{type}}** {{/if}}{{message}}
 
 {{~!-- commit hash --}} {{#if @root.linkReferences}}([{{shortHash}}]({{#if @root.host}}{{@root.host}}/{{/if}}{{#if @root.owner}}{{@root.owner}}/{{/if}}{{@root.repository}}/{{@root.commit}}/{{hash}})){{else}}{{shortHash~}}{{/if}}
 
