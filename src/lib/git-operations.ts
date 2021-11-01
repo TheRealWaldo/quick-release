@@ -27,6 +27,13 @@ export function createBranch(branch: string) {
   execSync(`git checkout -b ${branch}`);
 }
 
+export function getLatestCommitMessage() {
+  debug(`Getting commit messages...`);
+  return execSync(
+    `git log -1 --format=%B%n-hash-%n%H%n-gitTags-%n%d%n-committerDate-%n%ci%n --no-merges`
+  ).toString('utf-8');
+}
+
 export function getCommitMessages(from: string, to: string) {
   debug(`Getting commit messages...`);
   return execSync(

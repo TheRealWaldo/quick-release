@@ -8,6 +8,7 @@ import {
   getLatestVersionFromTags,
   remoteBranchExists,
   setUpGit,
+  getLatestCommitMessage,
 } from './lib/git-operations';
 import { getRecommendedVersion } from './lib/get-recommended-version';
 import { generateChangelog } from './lib/generate-changelog';
@@ -15,6 +16,7 @@ import { bumpFiles } from './lib/bump-files';
 import simpleGit from 'simple-git';
 import { default as debugLogger } from 'debug';
 import { githubOperations } from './lib/github-operations';
+import conventionalCommitsParser = require('conventional-commits-parser');
 
 process.on('unhandledRejection', (rejectionError) => {
   if (rejectionError instanceof Error) {
@@ -77,67 +79,76 @@ try {
         info('Nothing qualified to release.');
         // TODO: Create a feature to back-check/validate and update all past releases (addresses bug from release-it)
       } else {
-        // TODO: Check if the last commit is a chore(release) bump (i.e. release PR has been merged)
-        // TODO: Allow chore(release) commit to be configurable
-
-        // TODO: Tag the release/do the github release
-        const git = simpleGit();
         // TODO: Allow chore(release) commit to be configurable?
         const title = `chore(release): ${recommendedVersion}`;
 
-        if (remoteBranchExists(remoteRepo, 'release')) {
-          warning('Release branch already exists on the remote.  Changes will be destroyed.');
-        }
+        const latestCommit = conventionalCommitsParser.sync(getLatestCommitMessage());
+        if (latestCommit.header === title) {
+          info('Detected release PR merged.');
+          githubOp.release(
+            owner,
+            repo,
+            recommendedVersion,
+            `Release ${recommendedVersion}`,
+            latestCommit.body || ''
+          );
+        } else {
+          const git = simpleGit();
 
-        createBranch('release');
+          if (remoteBranchExists(remoteRepo, 'release')) {
+            warning('Release branch already exists on the remote.  Changes will be destroyed.');
+          }
 
-        return Promise.all([
-          bumpFiles(latestVersion, recommendedVersion, replaceFiles),
-          generateChangelog(
-            commitMessages,
-            {
-              version: recommendedVersion,
-              repoUrl: remoteRepo,
-              host: 'https://github.com',
-              owner: ownerGithubUsername,
-              issue: 'issues',
-              commit: 'commit',
-              date: dateFormat(new Date(), 'yyyy-mm-dd', true),
-            },
-            config
-          ),
-        ]).then(([replacementResults, changeLog]) => {
-          // TODO: If there was nothing bumped, there is nothing to commit: if the branch already existed this might be okay, if not, we might have an error as there'll be nothing to commit, push, and possibly an empty pull-request.  Handle this situation.
-          // TODO: Add a feature to run post bump file commands specified in action config (i.e. build/compile)
-          debug(`Replacement results: ${JSON.stringify(replacementResults)}`);
+          createBranch('release');
 
-          info('Changelog:');
-          info(changeLog);
+          return Promise.all([
+            bumpFiles(latestVersion, recommendedVersion, replaceFiles),
+            generateChangelog(
+              commitMessages,
+              {
+                version: recommendedVersion,
+                repoUrl: remoteRepo,
+                host: 'https://github.com',
+                owner: ownerGithubUsername,
+                issue: 'issues',
+                commit: 'commit',
+                date: dateFormat(new Date(), 'yyyy-mm-dd', true),
+              },
+              config
+            ),
+          ]).then(([replacementResults, changeLog]) => {
+            // TODO: If there was nothing bumped, there is nothing to commit: if the branch already existed this might be okay, if not, we might have an error as there'll be nothing to commit, push, and possibly an empty pull-request.  Handle this situation.
+            // TODO: Add a feature to run post bump file commands specified in action config (i.e. build/compile)
+            debug(`Replacement results: ${JSON.stringify(replacementResults)}`);
 
-          debug('committing...');
+            info('Changelog:');
+            info(changeLog);
 
-          return git
-            .add(replaceFiles)
-            .commit([title, changeLog])
-            .push('origin', 'release', { '--force': null })
-            .then(() => {
-              const pullRequestPromise = githubOp.createOrUpdatePullRequest(
-                owner,
-                repo,
-                'release',
-                base,
-                title,
-                changeLog
-              );
-              pullRequestPromise.then((number) => setOutput('pull-request', number));
-              if (assignees && assignees.length) {
-                pullRequestPromise.then((issue_number) =>
-                  githubOp.addAssignees(owner, repo, issue_number, assignees)
+            debug('committing...');
+
+            return git
+              .add(replaceFiles)
+              .commit([title, changeLog])
+              .push('origin', 'release', { '--force': null })
+              .then(() => {
+                const pullRequestPromise = githubOp.createOrUpdatePullRequest(
+                  owner,
+                  repo,
+                  'release',
+                  base,
+                  title,
+                  changeLog
                 );
-              }
-              return pullRequestPromise;
-            });
-        });
+                pullRequestPromise.then((number) => setOutput('pull-request', number));
+                if (assignees && assignees.length) {
+                  pullRequestPromise.then((issue_number) =>
+                    githubOp.addAssignees(owner, repo, issue_number, assignees)
+                  );
+                }
+                return pullRequestPromise;
+              });
+          });
+        }
       }
     })
     .catch((reason) => {
