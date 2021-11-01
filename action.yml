@@ -5,16 +5,12 @@ branding:
   color: green
 inputs:
   token:
-    description: Github token
+    description: GitHub Token to be used for creating pull requests, releases, etc.
     required: true
     default: ${{ github.token }}
   github-username:
     description: Set the Github username to use for creating/pushing updates.
     required: true
-    default: ${{ github.actor }}
-  owner-github-username:
-    description: Set the Github username to use for the repo owner.
-    required: false
     default: ${{ github.actor }}
   git-user-name:
     description: Set the git users full name to use when quick-release commits.
@@ -24,31 +20,31 @@ inputs:
     description: Set the git email address to use when quick-release commits.
     required: true
   tag-prefix:
-    description: Tag Prefix for versions
+    description: Tag Prefix for versions.
     required: false
     default: 'v'
   base:
-    description: The base branch a release pull request should target
+    description: The base branch a release pull request should target.
     default: 'main'
     required: true
   preset:
-    description: Preset to use for conventional-recommended-bump
+    description: Preset to use for conventional-recommended-bump.  If not specified will attempt to auto-detect.
     required: false
   replace-files:
-    description: Comma separated list of paths to files in which to replace the current version with the bumped version
+    description: Comma separated list of paths to files in which to replace the current version with the bumped version.
     required: false
   assignees:
-    description: Comma separated list of Github users to assign to pull-request
+    description: Comma separated list of Github users to assign to pull-request.
     required: false
 outputs:
-  version:
-    description: version
+  recommendedVersion:
+    description: Proposed version based on commits.
   latestVersion:
-    description: latestVersion returned from quick-release
+    description: Previous or current version from tags.
   changelog:
-    description: changelog returned from quick-release
+    description: Changelog as generated from commits.
   pull-request:
-    description: pull-request number if one was created or updated
+    description: Pull request number if one was created or updated.
 runs:
   using: 'node12'
   main: dist/index.js

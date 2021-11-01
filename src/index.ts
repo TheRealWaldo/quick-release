@@ -14,7 +14,6 @@ import { getRecommendedVersion } from './lib/get-recommended-version';
 import { generateChangelog } from './lib/generate-changelog';
 import { bumpFiles } from './lib/bump-files';
 import simpleGit from 'simple-git';
-import { default as debugLogger } from 'debug';
 import { githubOperations } from './lib/github-operations';
 import conventionalCommitsParser = require('conventional-commits-parser');
 
@@ -26,7 +25,6 @@ process.on('unhandledRejection', (rejectionError) => {
 });
 
 try {
-  debugLogger.enable('simple-git,simple-git:*');
   const tagPrefix = getInput('tag-prefix');
   debug(`Using tag prefix: ${tagPrefix}`);
   const githubToken = getInput('token', { required: true });
@@ -37,7 +35,6 @@ try {
   if (!gitUserEmail || !gitUserEmail.length) {
     throw Error('Could not determine git-user-email');
   }
-  const ownerGithubUsername = getInput('owner-github-username');
   const replaceFiles = getInput('replace-files')
     .split(',')
     .map((filePath) => filePath.trim())
@@ -63,6 +60,7 @@ try {
   setUpGit(gitUserName, gitUserEmail, remoteActionRepo);
 
   const latestVersion = getLatestVersionFromTags(tagPrefix);
+  setOutput('latestVersion', latestVersion);
   const convention = getInput('preset') || detectConvention();
   const commitMessages = getCommitMessages(latestVersion, 'HEAD');
 
@@ -74,6 +72,7 @@ try {
         commitMessages,
         config
       );
+      setOutput('recommendedVersion', recommendedVersion);
 
       if (recommendedVersion === latestVersion) {
         info('Nothing qualified to release.');
@@ -109,7 +108,7 @@ try {
                 version: recommendedVersion,
                 repoUrl: remoteRepo,
                 host: 'https://github.com',
-                owner: ownerGithubUsername,
+                owner,
                 issue: 'issues',
                 commit: 'commit',
                 date: dateFormat(new Date(), 'yyyy-mm-dd', true),
@@ -117,10 +116,11 @@ try {
               config
             ),
           ]).then(([replacementResults, changeLog]) => {
-            // TODO: If there was nothing bumped, there is nothing to commit: if the branch already existed this might be okay, if not, we might have an error as there'll be nothing to commit, push, and possibly an empty pull-request.  Handle this situation.
+            // TODO: If there was nothing bumped, there is nothing to commit: if the branch already existed this might be okay, if not, we might have an error as there'll be nothing to commit, push, and possibly an empty pull-request.  Handle this situation.  Perhaps a draft github release?
             // TODO: Add a feature to run post bump file commands specified in action config (i.e. build/compile)
             debug(`Replacement results: ${JSON.stringify(replacementResults)}`);
 
+            setOutput('changelog', changeLog);
             info('Changelog:');
             info(changeLog);
 
