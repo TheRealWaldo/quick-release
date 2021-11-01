@@ -1,4 +1,4 @@
-import { info, error, debug, setFailed, warning, getInput, setOutput } from '@actions/core';
+import { info, error, debug, setFailed, getInput, setOutput } from '@actions/core';
 import dateFormat from 'dateformat';
 import { loadConventionConfiguration } from './lib/convention-configuration';
 import {
@@ -6,7 +6,6 @@ import {
   detectConvention,
   getCommitMessages,
   getLatestVersionFromTags,
-  remoteBranchExists,
   setUpGit,
   getLatestCommitMessage,
 } from './lib/git-operations';
@@ -42,7 +41,7 @@ try {
   const remoteActionRepo = `https://${encodeURIComponent(githubUsername)}:${encodeURIComponent(
     githubToken
   )}@github.com/${process.env.GITHUB_REPOSITORY}.git`;
-  const remoteRepo = `https://github.com/${process.env.GITHUB_REPOSITORY}.git`;
+  const repoUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}`;
   const base = getInput('base', { required: true });
   const [owner, repo] = (process.env.GITHUB_REPOSITORY || '').split('/');
   const assignees = getInput('assignees')
@@ -93,11 +92,6 @@ try {
           );
         } else {
           const git = simpleGit();
-
-          if (remoteBranchExists(remoteRepo, 'release')) {
-            warning('Release branch already exists on the remote.  Changes will be destroyed.');
-          }
-
           createBranch('release');
 
           return Promise.all([
@@ -106,7 +100,7 @@ try {
               commitMessages,
               {
                 version: recommendedVersion,
-                repoUrl: remoteRepo,
+                repoUrl: repoUrl,
                 host: 'https://github.com',
                 owner,
                 issue: 'issues',
