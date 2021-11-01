@@ -19,6 +19,6 @@ jobs:
       - name: Test
         uses: ./
         with:
-          github-token: ${{ secrets.AUTO_PAT }}
+          token: ${{ secrets.AUTO_PAT }}
           replace-files: README.md
           git-user-email: 68967746+TRW-bot@users.noreply.github.com
