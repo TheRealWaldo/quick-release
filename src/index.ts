@@ -27,7 +27,7 @@ try {
   debugLogger.enable('simple-git,simple-git:*');
   const tagPrefix = getInput('tag-prefix');
   debug(`Using tag prefix: ${tagPrefix}`);
-  const githubToken = getInput('github-token', { required: true });
+  const githubToken = getInput('token', { required: true });
   const githubOp = new githubOperations({ auth: githubToken });
   const githubUsername = getInput('github-username', { required: true });
   const gitUserName = getInput('git-user-name', { required: true });
