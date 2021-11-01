@@ -14,7 +14,7 @@ import { generateChangelog } from './lib/generate-changelog';
 import { bumpFiles } from './lib/bump-files';
 import simpleGit from 'simple-git';
 import { default as debugLogger } from 'debug';
-import { addAssignees, createOrUpdatePullRequest } from './lib/github-operations';
+import { githubOperations } from './lib/github-operations';
 
 process.on('unhandledRejection', (rejectionError) => {
   if (rejectionError instanceof Error) {
@@ -28,6 +28,7 @@ try {
   const tagPrefix = getInput('tag-prefix');
   debug(`Using tag prefix: ${tagPrefix}`);
   const githubToken = getInput('github-token', { required: true });
+  const githubOp = new githubOperations({ auth: githubToken });
   const githubUsername = getInput('github-username', { required: true });
   const gitUserName = getInput('git-user-name', { required: true });
   const gitUserEmail = getInput('git-user-email') || process.env.GITHUB_EMAIL;
@@ -123,7 +124,7 @@ try {
             .commit([title, changeLog])
             .push('origin', 'release')
             .then(() => {
-              const pullRequestPromise = createOrUpdatePullRequest(
+              const pullRequestPromise = githubOp.createOrUpdatePullRequest(
                 owner,
                 repo,
                 'release',
@@ -134,7 +135,7 @@ try {
               pullRequestPromise.then((number) => setOutput('pull-request', number));
               if (assignees && assignees.length) {
                 pullRequestPromise.then((issue_number) =>
-                  addAssignees(owner, repo, issue_number, assignees)
+                  githubOp.addAssignees(owner, repo, issue_number, assignees)
                 );
               }
               return pullRequestPromise;
