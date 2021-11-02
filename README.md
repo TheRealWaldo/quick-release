@@ -55,6 +55,21 @@ Start by adding the Quick Release GitHub Action to your repository actions.
 |`replace-files`|No||Comma separated list of paths to files in which to replace the current version with the bumped version.
 |`assignees`|No||Comma separated list of Github users to assign to pull-request.
 
+### Presets
+
+The following presets are currently supported:
+|Preset|Auto Detects?|Link
+|:---|---|---
+|`angular`|Yes|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular
+|`atom`|Yes|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-atom
+|`codemirror`|No|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-codemirror
+|`conventionalcommits`|No|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits
+|`ember`|Yes|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-ember
+|`eslint`|Yes|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-eslint
+|`express`|No|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-express
+|`jquery`|Yes|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-jquery
+|`jshint`|Yes|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-jshint
+
 ### Outputs
 |Output|Description
 |:---|---
