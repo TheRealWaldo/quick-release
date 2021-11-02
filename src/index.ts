@@ -61,7 +61,10 @@ try {
   const latestVersion = getLatestVersionFromTags(tagPrefix);
   setOutput('latestVersion', latestVersion);
   const convention = getInput('preset') || detectConvention();
-  const commitMessages = getCommitMessages(latestVersion, 'HEAD');
+  const commitMessages = getCommitMessages(
+    latestVersion !== tagPrefix + '0.0.0' ? latestVersion : '',
+    'HEAD'
+  );
 
   loadConventionConfiguration(convention)
     .then((config) => {
