@@ -37,7 +37,9 @@ export function getLatestCommitMessage() {
 export function getCommitMessages(from: string, to: string) {
   debug(`Getting commit messages...`);
   return execSync(
-    `git log ${from}..${to} --format=%B%n-hash-%n%H%n-gitTags-%n%d%n-committerDate-%n%ci%n${DELIMITER} --no-merges`
+    `git log ${from}${
+      from ? '..' : ''
+    }${to} --format=%B%n-hash-%n%H%n-gitTags-%n%d%n-committerDate-%n%ci%n${DELIMITER} --no-merges`
   )
     .toString('utf-8')
     .split(`${DELIMITER}\n`)
