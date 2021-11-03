@@ -77,3 +77,4 @@ The following presets are currently supported:
 |`latestVersion`|Previous or current version from tags.
 |`changelog`|Changelog as generated from commits.
 |`pull-request`|Pull request number if one was created or updated.
+|`status`|What quick-release wound up doing.  One of `pull-request`, `release`, or `nothing`.
