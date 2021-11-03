@@ -33,7 +33,7 @@ try {
   const gitUserName = getInput('git-user-name', { required: true });
   const gitUserEmail = getInput('git-user-email') || process.env.GITHUB_EMAIL;
   if (!gitUserEmail || !gitUserEmail.length) {
-    throw Error('Could not determine git-user-email');
+    throw Error('Could not determine git-user-email.');
   }
   const publishNPM = getInput('npm-publish').toLowerCase() === 'true';
   const replaceFiles = getInput('replace-files')
