@@ -1,4 +1,4 @@
-# quick-release v0.1.3
+# quick-release v0.2.0
 
 Quick Release is a GitHub action that allows simple releases from a straightforward branching model leveraging a standard commit message convention and semantic versioning.
 
@@ -31,7 +31,7 @@ Start by adding the Quick Release GitHub Action to your repository actions.
     persist-credentials: false
 
 - name: quick-release
-  uses: TheRealWaldo/quick-release@v0.1.3
+  uses: TheRealWaldo/quick-release@v0.2.0
   with:
     token: ${{ secrets.PAT }}
     git-user-email: your@email.address
