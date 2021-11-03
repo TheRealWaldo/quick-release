@@ -1,9 +1,21 @@
 {{#if isPatch~}}
-  ###
-{{~else~}}
   ##
+{{~else~}}
+  #
 {{~/if}} {{#if @root.linkCompare~}}
-  [{{version}}]({{compareUrlFormat}})
+  [{{version}}](
+  {{~#if @root.repository~}}
+    {{~#if @root.host}}
+      {{~@root.host}}/
+    {{~/if}}
+    {{~#if @root.owner}}
+      {{~@root.owner}}/
+    {{~/if}}
+    {{~@root.repository}}
+  {{~else}}
+    {{~@root.repoUrl}}
+  {{~/if~}}
+  /compare/{{previousTag}}...{{currentTag}})
 {{~else}}
   {{~version}}
 {{~/if}}
