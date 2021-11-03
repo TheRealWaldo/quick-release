@@ -15,6 +15,7 @@ import { bumpFiles } from './lib/bump-files';
 import simpleGit from 'simple-git';
 import { githubOperations } from './lib/github-operations';
 import conventionalCommitsParser = require('conventional-commits-parser');
+import { npmPublish } from './lib/npm-operations';
 
 process.on('unhandledRejection', (rejectionError) => {
   if (rejectionError instanceof Error) {
@@ -34,6 +35,7 @@ try {
   if (!gitUserEmail || !gitUserEmail.length) {
     throw Error('Could not determine git-user-email');
   }
+  const publishNPM = getInput('publish-npm').toLowerCase() === 'true';
   const replaceFiles = getInput('replace-files')
     .split(',')
     .map((filePath) => filePath.trim())
@@ -79,6 +81,7 @@ try {
       if (recommendedVersion === latestVersion) {
         info('Nothing qualified to release.');
         // TODO: Create a feature to back-check/validate and update all past releases (addresses bug from release-it)
+        return -1;
       } else {
         // TODO: Allow chore(release) commit to be configurable?
         const title = `chore(release): ${recommendedVersion}`;
@@ -86,13 +89,20 @@ try {
         const latestCommit = conventionalCommitsParser.sync(getLatestCommitMessage());
         if (latestCommit.header === title) {
           info('Detected release PR merged.');
-          githubOp.release(
-            owner,
-            repo,
-            recommendedVersion,
-            `Release ${recommendedVersion}`,
-            latestCommit.body || ''
-          );
+          return githubOp
+            .release(
+              owner,
+              repo,
+              recommendedVersion,
+              `Release ${recommendedVersion}`,
+              latestCommit.body || ''
+            )
+            .then(() => {
+              if (publishNPM) {
+                npmPublish();
+              }
+              return 0;
+            });
         } else {
           const git = simpleGit();
           createBranch('release');
