@@ -35,7 +35,7 @@ try {
   if (!gitUserEmail || !gitUserEmail.length) {
     throw Error('Could not determine git-user-email');
   }
-  const publishNPM = getInput('publish-npm').toLowerCase() === 'true';
+  const publishNPM = getInput('npm-publish').toLowerCase() === 'true';
   const replaceFiles = getInput('replace-files')
     .split(',')
     .map((filePath) => filePath.trim())
