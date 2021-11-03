@@ -15,7 +15,6 @@ import { bumpFiles } from './lib/bump-files';
 import simpleGit from 'simple-git';
 import { githubOperations } from './lib/github-operations';
 import conventionalCommitsParser = require('conventional-commits-parser');
-import { npmPublish } from './lib/npm-operations';
 
 process.on('unhandledRejection', (rejectionError) => {
   if (rejectionError instanceof Error) {
@@ -35,7 +34,6 @@ try {
   if (!gitUserEmail || !gitUserEmail.length) {
     throw Error('Could not determine git-user-email.');
   }
-  const publishNPM = getInput('npm-publish').toLowerCase() === 'true';
   const replaceFiles = getInput('replace-files')
     .split(',')
     .map((filePath) => filePath.trim())
@@ -98,9 +96,6 @@ try {
               latestCommit.body || ''
             )
             .then(() => {
-              if (publishNPM) {
-                npmPublish();
-              }
               return 0;
             });
         } else {

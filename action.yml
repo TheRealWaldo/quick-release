@@ -36,10 +36,6 @@ inputs:
   assignees:
     description: Comma separated list of Github users to assign to pull-request.
     required: false
-  npm-publish:
-    description: Run `npm-publish` after performing GitHub release.
-    required: false
-    default: 'false'
 outputs:
   recommendedVersion:
     description: Proposed version based on commits.
