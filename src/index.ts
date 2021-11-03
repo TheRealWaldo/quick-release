@@ -24,6 +24,7 @@ process.on('unhandledRejection', (rejectionError) => {
 });
 
 try {
+  setOutput('status', 'nothing');
   const tagPrefix = getInput('tag-prefix');
   debug(`Using tag prefix: ${tagPrefix}`);
   const githubToken = getInput('token', { required: true });
@@ -96,6 +97,7 @@ try {
               latestCommit.body || ''
             )
             .then(() => {
+              setOutput('status', 'release');
               return 0;
             });
         } else {
@@ -141,7 +143,11 @@ try {
                   title,
                   changeLog
                 );
-                pullRequestPromise.then((number) => setOutput('pull-request', number));
+                pullRequestPromise.then((number) => {
+                  setOutput('pull-request', number);
+                  setOutput('status', 'pull-request');
+                  return number;
+                });
                 if (assignees && assignees.length) {
                   pullRequestPromise.then((issue_number) =>
                     githubOp.addAssignees(owner, repo, issue_number, assignees)

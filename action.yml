@@ -45,6 +45,8 @@ outputs:
     description: Changelog as generated from commits.
   pull-request:
     description: Pull request number if one was created or updated.
+  status:
+    description: What quick-release wound up doing.  One of `pull-request`, `release`, or `nothing`
 runs:
   using: 'node12'
   main: dist/index.js
