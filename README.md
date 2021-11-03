@@ -54,7 +54,6 @@ Start by adding the Quick Release GitHub Action to your repository actions.
 |`preset`|No||Preset to use for conventional-recommended-bump.  If not specified will attempt to auto-detect.
 |`replace-files`|No||Comma separated list of paths to files in which to replace the current version with the bumped version.
 |`assignees`|No||Comma separated list of Github users to assign to pull-request.
-|`publish-npm`|No|`false`|Run `npm publish` after performing GitHub release.
 
 ### Presets
 
