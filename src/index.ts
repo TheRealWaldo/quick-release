@@ -119,7 +119,7 @@ try {
               },
               config
             ),
-          ]).then(([replacementResults, changeLog]) => {
+          ]).then(async ([replacementResults, changeLog]) => {
             // TODO: If there was nothing bumped, there is nothing to commit: if the branch already existed this might be okay, if not, we might have an error as there'll be nothing to commit, push, and possibly an empty pull-request.  Handle this situation.  Perhaps a draft github release?
             // TODO: Add a feature to run post bump file commands specified in action config (i.e. build/compile)
             debug(`Replacement results: ${JSON.stringify(replacementResults)}`);
@@ -130,31 +130,29 @@ try {
 
             debug('committing...');
 
-            return git
+            await git
               .add(replaceFiles)
               .commit([title, changeLog])
-              .push('origin', 'release', { '--force': null })
-              .then(() => {
-                const pullRequestPromise = githubOp.createOrUpdatePullRequest(
-                  owner,
-                  repo,
-                  'release',
-                  base,
-                  title,
-                  changeLog
-                );
-                pullRequestPromise.then((number) => {
-                  setOutput('pull-request', number);
-                  setOutput('status', 'pull-request');
-                  return number;
-                });
-                if (assignees && assignees.length) {
-                  pullRequestPromise.then((issue_number) =>
-                    githubOp.addAssignees(owner, repo, issue_number, assignees)
-                  );
-                }
-                return pullRequestPromise;
-              });
+              .push('origin', 'release', { '--force': null });
+            const pullRequestPromise = githubOp.createOrUpdatePullRequest(
+              owner,
+              repo,
+              'release',
+              base,
+              title,
+              changeLog
+            );
+            pullRequestPromise.then((number) => {
+              setOutput('pull-request', number);
+              setOutput('status', 'pull-request');
+              return number;
+            });
+            if (assignees && assignees.length) {
+              pullRequestPromise.then((issue_number) =>
+                githubOp.addAssignees(owner, repo, issue_number, assignees)
+              );
+            }
+            return await pullRequestPromise;
           });
         }
       }
