@@ -52,7 +52,7 @@
     "@types/conventional-changelog-writer": "^4.0.1",
     "@types/conventional-commits-detector": "^1.0.0",
     "@types/conventional-commits-parser": "^3.0.2",
-    "@types/dateformat": "^3.0.1",
+    "@types/dateformat": "^5.0.0",
     "@types/debug": "^4.1.7",
     "@types/nodegit": "^0.27.3",
     "@types/q": "^1.5.5",
