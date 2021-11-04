@@ -29,5 +29,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: wagoid/commitlint-github-action@v4.1.9
 
-      - name: Lint code
-        run: npm run lint
+      - name: Lint Code
+        uses: wearerequired/lint-action@v1
+        with:
+          continue_on_error: false
+          neutral_check_on_warning: true
+          eslint: true
+          eslint_dir: src/
+          eslint_extensions: ts,js
+          eslint_args: --config ../.eslintrc
+          prettier: true
