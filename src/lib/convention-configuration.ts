@@ -8,6 +8,7 @@ import conventionalChangelogESLint = require('conventional-changelog-eslint');
 import conventionalChangelogExpress = require('conventional-changelog-express');
 import conventionalChangelogJQuery = require('conventional-changelog-jquery');
 import conventionalChangelogJSHint = require('conventional-changelog-jshint');
+import conventionalChangelogCore = require('conventional-changelog-core');
 
 // TODO: 'jscs'?
 const CONVENTIONS = {
@@ -22,7 +23,9 @@ const CONVENTIONS = {
   jshint: conventionalChangelogJSHint,
 };
 
-async function conventionConfigurationResolver(conventionConfiguration: any) {
+function conventionConfigurationResolver(
+  conventionConfiguration: conventionalChangelogCore.Options
+): any {
   return Q.resolve().then(() => {
     // handle traditional node-style callbacks
     if (typeof conventionConfiguration === 'function') {

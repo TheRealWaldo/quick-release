@@ -2,6 +2,7 @@ import { error, debug, warning } from '@actions/core';
 import { parseMessages } from './parse-messages';
 import { Readable } from 'stream';
 import conventionalChangelogWriter = require('conventional-changelog-writer');
+import conventionalChangelogCore = require('conventional-changelog-core');
 
 async function streamToString(stream: Readable) {
   const chunks = [];
@@ -16,8 +17,10 @@ async function streamToString(stream: Readable) {
 export function generateChangelog(
   commitMessages: string[],
   context: conventionalChangelogWriter.Context,
-  // TODO: Type config
-  config: any
+  config: {
+    parserOpts: conventionalChangelogCore.ParserOptions;
+    writerOpts: conventionalChangelogWriter.Options;
+  }
 ) {
   const parserOpts = Object.assign({}, config.parserOpts, {
     warn: warning,
