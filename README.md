@@ -12,9 +12,9 @@ Multiple presets are compiled-in and selectable from this actions configuration.
 
 ## Branching Model
 
-Quick Release assumes you are leveraging Continuous Integration towards the `main` branch.  We believe developers should merge small pull requests there frequently.
+Quick Release assumes you are leveraging Continuous Integration towards the `main` branch. We believe developers should merge small pull requests there frequently.
 
-Quick Release does not assume you want to release every single change immediately.  Instead, it creates a branch called `release` and a pull request pointing back to `main` with any updated files related to the deployment (i.e., files with version number bumped) within it.
+Quick Release does not assume you want to release every single change immediately. Instead, it creates a branch called `release` and a pull request pointing back to `main` with any updated files related to the deployment (i.e., files with version number bumped) within it.
 
 ## Usage
 
@@ -37,23 +37,23 @@ Start by adding the Quick Release GitHub Action to your repository actions.
     git-user-email: your@email.address
 ```
 
-`secrets.PAT` should be replaced by an appropriate [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for the GitHub User you wish to commit on your behalf.  As a best practice, use [Encrypted Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) to store and access this PAT in your actions.
+`secrets.PAT` should be replaced by an appropriate [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for the GitHub User you wish to commit on your behalf. As a best practice, use [Encrypted Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) to store and access this PAT in your actions.
 
-`your@email.address` should be replaced with your email address that you would like to use for any commits that Quick Release will do.  See [Setting your commit email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-user-account/managing-email-preferences/setting-your-commit-email-address).
+`your@email.address` should be replaced with your email address that you would like to use for any commits that Quick Release will do. See [Setting your commit email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-user-account/managing-email-preferences/setting-your-commit-email-address).
 
 ### Inputs
 
-|Input|Required?|Default|Description
-|:---|---|---|----
-|`token`|Yes|`${{ github.token }}`|GitHub Token to be used for creating pull requests, releases, etc.
-|`git-user-email`|Yes||Set the git email address to use when quick-release commits.
-|`git-user-name`|Yes|quick-release bump|Set the git users full name to use when quick-release commits.
-|`github-username`|Yes|`${{ github.actor }}`|Set the Github username to use for creating/pushing updates.
-|`tag-prefix`|No|v|Tag Prefix for versions.
-|`base`|Yes|main|The base branch a release pull request should target.
-|`preset`|No||Preset to use for conventional-recommended-bump.  If not specified will attempt to auto-detect.
-|`replace-files`|No||Comma separated list of paths to files in which to replace the current version with the bumped version.
-|`assignees`|No||Comma separated list of Github users to assign to pull-request.
+| Input             | Required? | Default               | Description                                                                                             |
+| :---------------- | --------- | --------------------- | ------------------------------------------------------------------------------------------------------- |
+| `token`           | Yes       | `${{ github.token }}` | GitHub Token to be used for creating pull requests, releases, etc.                                      |
+| `git-user-email`  | Yes       |                       | Set the git email address to use when quick-release commits.                                            |
+| `git-user-name`   | Yes       | quick-release bump    | Set the git users full name to use when quick-release commits.                                          |
+| `github-username` | Yes       | `${{ github.actor }}` | Set the Github username to use for creating/pushing updates.                                            |
+| `tag-prefix`      | No        | v                     | Tag Prefix for versions.                                                                                |
+| `base`            | Yes       | main                  | The base branch a release pull request should target.                                                   |
+| `preset`          | No        |                       | Preset to use for conventional-recommended-bump. If not specified will attempt to auto-detect.          |
+| `replace-files`   | No        |                       | Comma separated list of paths to files in which to replace the current version with the bumped version. |
+| `assignees`       | No        |                       | Comma separated list of Github users to assign to pull-request.                                         |
 
 ### Presets
 
@@ -71,10 +71,11 @@ The following presets are currently supported:
 |`jshint`|Yes|https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-jshint
 
 ### Outputs
-|Output|Description
-|:---|---
-|`recommendedVersion`|Proposed version based on commits.
-|`latestVersion`|Previous or current version from tags.
-|`changelog`|Changelog as generated from commits.
-|`pull-request`|Pull request number if one was created or updated.
-|`status`|What quick-release wound up doing.  One of `pull-request`, `release`, or `nothing`.
+
+| Output               | Description                                                                        |
+| :------------------- | ---------------------------------------------------------------------------------- |
+| `recommendedVersion` | Proposed version based on commits.                                                 |
+| `latestVersion`      | Previous or current version from tags.                                             |
+| `changelog`          | Changelog as generated from commits.                                               |
+| `pull-request`       | Pull request number if one was created or updated.                                 |
+| `status`             | What quick-release wound up doing. One of `pull-request`, `release`, or `nothing`. |
