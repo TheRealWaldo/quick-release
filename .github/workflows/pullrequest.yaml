@@ -28,3 +28,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: wagoid/commitlint-github-action@v4.1.9
+
+      - name: Lint code
+        run: npm run lint
