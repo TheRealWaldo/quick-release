@@ -1,27 +1,33 @@
 import { info, debug, warning } from '@actions/core';
 import { parseMessages } from './parse-messages';
 import conventionalCommitsFilter = require('conventional-commits-filter');
-import { inc } from 'semver';
+import { inc, ReleaseType } from 'semver';
+import conventionalChangelogCore = require('conventional-changelog-core');
+import conventionalRecommendedBump = require('conventional-recommended-bump');
 
-const VERSIONS = ['major', 'minor', 'patch'];
+const VERSIONS: ReleaseType[] = ['major', 'minor', 'patch'];
 
-function noop() {
-  warning('noop called');
-}
+export type recommendedBumpOpts = {
+  parserOpts?: conventionalChangelogCore.ParserOptions;
+  whatBump?: (
+    commits: string[],
+    options: conventionalRecommendedBump.Options
+  ) => {
+    level: number;
+    releaseType: ReleaseType;
+  };
+};
 
 export function getRecommendedVersion(
   latestVersion: string,
   tagPrefix: string,
   commitMessages: string[],
-  // TODO: Type config
-  config: any
-) {
-  // TODO: Turn this into a promise
-  // return new Promise((resolve, reject) => {
-  const whatBump =
-    config.recommendedBumpOpts && config.recommendedBumpOpts.whatBump
-      ? config.recommendedBumpOpts.whatBump
-      : noop;
+  config: {
+    recommendedBumpOpts: recommendedBumpOpts;
+    parserOpts: conventionalChangelogCore.ParserOptions;
+  }
+): string {
+  const whatBump = config.recommendedBumpOpts.whatBump;
 
   if (typeof whatBump !== 'function') {
     throw Error('whatBump must be a function');
@@ -45,17 +51,16 @@ export function getRecommendedVersion(
     return latestVersion;
   } else {
     // TODO: Allow for ignoreReverted to be set in action configuration
-    const options = Object.assign({ ignoreReverted: true }, {});
+    const options = { ignoreReverted: true };
     const commits = options.ignoreReverted
       ? conventionalCommitsFilter(parsedMessages)
       : parsedMessages;
-    let result = whatBump(commits, options);
+    const result = whatBump(commits, options);
 
-    // TODO: Figure out what happens if there is no commits
     if (result && result.level != null) {
       result.releaseType = VERSIONS[result.level];
-    } else if (result == null) {
-      result = {};
+    } else if (!result) {
+      throw Error('whatBump did not return anything.');
     }
     debug(`whatBump result: ${JSON.stringify(result)}`);
 
@@ -64,5 +69,4 @@ export function getRecommendedVersion(
     info(`Recommended version: ${latestVersion} -> ${recommendedVersion}`);
     return recommendedVersion;
   }
-  //});
 }
