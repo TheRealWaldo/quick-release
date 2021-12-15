@@ -57,7 +57,7 @@
     "@types/conventional-recommended-bump": "^6.1.0",
     "@types/dateformat": "^5.0.0",
     "@types/debug": "^4.1.7",
-    "@types/nodegit": "^0.27.6",
+    "@types/nodegit": "^0.27.7",
     "@types/q": "^1.5.5",
     "@types/semver": "^7.3.9",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
