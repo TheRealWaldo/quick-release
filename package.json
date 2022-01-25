@@ -43,7 +43,7 @@
     "dateformat": "^5.0.2",
     "replace-in-file": "^6.3.1",
     "semver": "^7.3.5",
-    "simple-git": "^2.48.0"
+    "simple-git": "^3.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
