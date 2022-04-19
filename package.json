@@ -61,7 +61,7 @@
     "@types/q": "^1.5.5",
     "@types/semver": "^7.3.9",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
-    "@typescript-eslint/parser": "^5.19.0",
+    "@typescript-eslint/parser": "^5.20.0",
     "@vercel/ncc": "^0.33.4",
     "commitlint-config-true-conventional-commits": "^0.1.2",
     "eslint": "^8.13.0",
