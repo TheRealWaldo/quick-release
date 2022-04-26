@@ -30,7 +30,7 @@ jobs:
         uses: wagoid/commitlint-github-action@v4.1.11
 
       - name: Lint Code
-        uses: wearerequired/lint-action@v1
+        uses: wearerequired/lint-action@v2
         with:
           continue_on_error: false
           neutral_check_on_warning: true
