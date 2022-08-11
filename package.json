@@ -59,7 +59,7 @@
     "@types/debug": "^4.1.7",
     "@types/nodegit": "^0.27.10",
     "@types/q": "^1.5.5",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "^7.3.11",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "@vercel/ncc": "^0.34.0",
