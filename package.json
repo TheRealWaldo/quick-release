@@ -60,7 +60,7 @@
     "@types/nodegit": "^0.28.3",
     "@types/q": "^1.5.5",
     "@types/semver": "^7.3.13",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.0",
     "@vercel/ncc": "^0.36.1",
     "commitlint-config-true-conventional-commits": "^0.1.3",
