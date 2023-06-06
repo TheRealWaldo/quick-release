@@ -33,7 +33,7 @@
     "conventional-changelog-conventionalcommits": "^5.0.0",
     "conventional-changelog-ember": "^2.0.9",
     "conventional-changelog-eslint": "^4.0.0",
-    "conventional-changelog-express": "^2.0.6",
+    "conventional-changelog-express": "^3.0.0",
     "conventional-changelog-jquery": "^4.0.0",
     "conventional-changelog-jshint": "^2.0.9",
     "conventional-changelog-writer": "^5.0.1",
