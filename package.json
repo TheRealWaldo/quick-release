@@ -28,7 +28,7 @@
     "@octokit/action": "^6.0.0",
     "actions-toolkit": "^6.0.1",
     "conventional-changelog-angular": "^6.0.0",
-    "conventional-changelog-atom": "^2.0.8",
+    "conventional-changelog-atom": "^3.0.0",
     "conventional-changelog-codemirror": "^2.0.8",
     "conventional-changelog-conventionalcommits": "^6.0.0",
     "conventional-changelog-ember": "^2.0.9",
