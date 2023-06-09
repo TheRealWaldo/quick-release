@@ -39,7 +39,7 @@
     "conventional-changelog-writer": "^6.0.0",
     "conventional-commits-detector": "^1.0.3",
     "conventional-commits-filter": "^3.0.0",
-    "conventional-commits-parser": "^3.2.4",
+    "conventional-commits-parser": "^4.0.0",
     "dateformat": "^5.0.3",
     "replace-in-file": "^7.0.1",
     "semver": "^7.5.1",
