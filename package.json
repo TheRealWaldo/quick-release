@@ -41,7 +41,7 @@
     "conventional-commits-filter": "^4.0.0",
     "conventional-commits-parser": "^5.0.0",
     "dateformat": "^5.0.3",
-    "replace-in-file": "^7.0.1",
+    "replace-in-file": "^7.0.2",
     "semver": "^7.5.4",
     "simple-git": "^3.20.0"
   },
