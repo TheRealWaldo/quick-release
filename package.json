@@ -56,7 +56,7 @@
     "@types/conventional-commits-parser": "^3.0.4",
     "@types/conventional-recommended-bump": "^9.0.1",
     "@types/dateformat": "^5.0.0",
-    "@types/debug": "^4.1.9",
+    "@types/debug": "^4.1.12",
     "@types/nodegit": "^0.28.7",
     "@types/q": "^1.5.7",
     "@types/semver": "^7.5.3",
