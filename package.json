@@ -51,7 +51,7 @@
     "@tsconfig/node14": "^14.1.0",
     "@types/conventional-changelog": "^3.1.5",
     "@types/conventional-changelog-core": "^4.2.7",
-    "@types/conventional-changelog-writer": "^4.0.6",
+    "@types/conventional-changelog-writer": "^4.0.10",
     "@types/conventional-commits-detector": "^1.0.2",
     "@types/conventional-commits-parser": "^3.0.6",
     "@types/conventional-recommended-bump": "^9.0.3",
