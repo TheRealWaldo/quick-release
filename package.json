@@ -48,7 +48,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",
     "@commitlint/config-conventional": "^19.1.0",
-    "@tsconfig/node14": "^14.1.0",
+    "@tsconfig/node14": "^14.1.2",
     "@types/conventional-changelog": "^3.1.5",
     "@types/conventional-changelog-core": "^4.2.7",
     "@types/conventional-changelog-writer": "^4.0.10",
