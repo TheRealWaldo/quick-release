@@ -27,7 +27,7 @@ jobs:
       - name: Commit Linter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: wagoid/commitlint-github-action@v5.4.6
+        uses: wagoid/commitlint-github-action@v6.0.1
 
       - name: Lint Code
         uses: wearerequired/lint-action@v2
