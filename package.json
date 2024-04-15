@@ -46,7 +46,7 @@
     "simple-git": "^3.24.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.2.1",
+    "@commitlint/cli": "^19.2.2",
     "@commitlint/config-conventional": "^19.1.0",
     "@tsconfig/node14": "^14.1.2",
     "@types/conventional-changelog": "^3.1.5",
