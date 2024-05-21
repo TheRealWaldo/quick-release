@@ -54,7 +54,7 @@
     "@types/conventional-changelog-writer": "^4.0.10",
     "@types/conventional-commits-detector": "^1.0.2",
     "@types/conventional-commits-parser": "^5.0.0",
-    "@types/conventional-recommended-bump": "^9.0.3",
+    "@types/conventional-recommended-bump": "^10.0.0",
     "@types/dateformat": "^5.0.2",
     "@types/debug": "^4.1.12",
     "@types/nodegit": "^0.28.7",
