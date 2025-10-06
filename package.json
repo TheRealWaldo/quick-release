@@ -49,7 +49,7 @@
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@tsconfig/node14": "^14.1.2",
-    "@types/conventional-changelog": "^3.1.5",
+    "@types/conventional-changelog": "^6.0.0",
     "@types/conventional-changelog-core": "^8.0.0",
     "@types/conventional-changelog-writer": "^4.0.10",
     "@types/conventional-commits-detector": "^1.0.2",
